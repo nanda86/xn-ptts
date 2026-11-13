@@ -448,9 +448,12 @@ impl Phonon {
             let (lat_tx, lat_rx) = std::sync::mpsc::channel::<(usize, Vec<f32>)>();
             let (pcm_tx, pcm_rx) = std::sync::mpsc::channel::<Result<Vec<f32>, String>>();
             // Mimi owns its streaming state for the whole utterance, so frames stay in order.
+            // This thread waits on it for every frame, so it runs at this thread's QoS.
+            let qos = crate::qos::Qos::current();
             std::thread::Builder::new()
                 .name("mimi".into())
                 .spawn_scoped(scope, move || {
+                    qos.apply();
                     while let Ok((i, lat)) = lat_rx.recv() {
                         let r = stream.decode(i, &lat);
                         let failed = r.is_err();

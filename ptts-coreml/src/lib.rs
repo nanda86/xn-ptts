@@ -18,6 +18,7 @@ pub mod mil;
 pub mod package;
 pub mod phonon;
 pub mod proto;
+pub mod qos;
 #[cfg(target_vendor = "apple")]
 pub mod run;
 pub mod weights;
